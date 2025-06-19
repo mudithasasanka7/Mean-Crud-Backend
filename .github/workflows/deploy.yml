@@ -21,10 +21,10 @@ jobs:
       - name: Deploy to Server via SSH
         run: |
           ssh -o StrictHostKeyChecking=no ${{ secrets.USERNAME }}@${{ secrets.HOST }} '
-            mkdir -p ~/mean-app/{backend,frontend}
+            mkdir -p ~/Mean-Crud-Backend/{backend,frontend}
 
             # Backend Setup
-            cd ~/mean-app/backend
+            cd ~/Mean-Crud-Backend/backend
             rm -rf *
             git clone https://github.com/${{ github.repository }} temp
             cp -r temp/backend/* .
@@ -34,7 +34,7 @@ jobs:
             pm2 restart backend || pm2 start server.js --name backend
 
             # Frontend Setup
-            cd ~/mean-app/frontend
+            cd ~/Mean-Crud-Backend/frontend
             rm -rf *
             git clone https://github.com/${{ github.repository }} temp
             cp -r temp/frontend/* .
