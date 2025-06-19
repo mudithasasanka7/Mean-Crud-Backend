@@ -1,0 +1,46 @@
+name: Deploy MEAN App to Ubuntu
+
+on:
+  push:
+    branches:
+      - main
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v3
+
+      - name: Setup SSH
+        uses: webfactory/ssh-agent@v0.5.4
+        with:
+          ssh-private-key: ${{ secrets.PRIVATE_KEY }}
+
+      - name: Deploy to Server via SSH
+        run: |
+          ssh -o StrictHostKeyChecking=no ${{ secrets.USERNAME }}@${{ secrets.HOST }} '
+            mkdir -p ~/mean-app/{backend,frontend}
+
+            # Backend Setup
+            cd ~/mean-app/backend
+            rm -rf *
+            git clone https://github.com/${{ github.repository }} temp
+            cp -r temp/backend/* .
+            rm -rf temp
+            echo "${{ secrets.BACKEND_ENV }}" > .env
+            npm install
+            pm2 restart backend || pm2 start server.js --name backend
+
+            # Frontend Setup
+            cd ~/mean-app/frontend
+            rm -rf *
+            git clone https://github.com/${{ github.repository }} temp
+            cp -r temp/frontend/* .
+            rm -rf temp
+            echo "${{ secrets.FRONTEND_ENV }}" > .env
+            npm install
+            npm run build
+            sudo cp -r dist/* /var/www/html/
+          '
