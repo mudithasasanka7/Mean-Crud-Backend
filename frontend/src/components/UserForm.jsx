@@ -28,7 +28,7 @@ export default function UserForm({ onUserAdded }) {
         value={email}
         onChange={e => setEmail(e.target.value)}
       />
-      <button type="submit">Add User</button>
+      <button type="submit">Add Employee</button>
     </form>
   );
 }
